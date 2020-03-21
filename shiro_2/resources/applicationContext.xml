@@ -14,6 +14,18 @@
         <property name="cacheManager" ref="cacheManager"/>
         <!--        <property name="realm" ref="jdbcRealm"/>-->
         <property name="authenticator" ref="authenticator"/>
+
+<!--        //认证策略 所有realm都通过才能认证 默认的是有一个通过就行-->
+<!--        <property name="authenticationStrategy">-->
+<!--            <bean class="org.apache.shiro.authc.pam.AllSuccessfulStrategy"/>-->
+<!--        </property>-->
+<!--        -->
+        <property name="realms">
+            <list>
+                <ref bean="jdbcRealm"/>
+                <ref bean="secondRealm"/>
+            </list>
+        </property>
     </bean>
     <!--配置cacheManager
     配置ehcache的配置文件 需要加入ehcache的jar和配置文件
@@ -24,12 +36,9 @@
 
 
     <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
-        <property name="realms">
-            <list>
-                <ref bean="jdbcRealm"/>
-                <ref bean="secondRealm"/>
-            </list>
-        </property>
+<!--        <property name="authenticationStrategy">-->
+<!--            <bean class="org.apache.shiro.authc.pam.AllSuccessfulStrategy"/>-->
+<!--        </property>-->
     </bean>
 
 
