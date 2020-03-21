@@ -12,7 +12,8 @@
     -->
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
         <property name="cacheManager" ref="cacheManager"/>
-        <property name="realm" ref="jdbcRealm"/>
+        <!--        <property name="realm" ref="jdbcRealm"/>-->
+        <property name="authenticator" ref="authenticator"/>
     </bean>
     <!--配置cacheManager
     配置ehcache的配置文件 需要加入ehcache的jar和配置文件
@@ -21,10 +22,36 @@
         <property name="cacheManagerConfigFile" value="classpath:ehcache.xml"/>
     </bean>
 
+
+    <bean id="authenticator" class="org.apache.shiro.authc.pam.ModularRealmAuthenticator">
+        <property name="realms">
+            <list>
+                <ref bean="jdbcRealm"/>
+                <ref bean="secondRealm"/>
+            </list>
+        </property>
+    </bean>
+
+
     <!--    配置realm
     直接配置实现了Realm接口的bean
     -->
-    <bean id="jdbcRealm" class="com.javafan.shiro.realms.ShiroRealm"/>
+    <bean id="jdbcRealm" class="com.javafan.shiro.realms.ShiroRealm">
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="MD5"/>
+                <property name="hashIterations" value="1024"/>
+            </bean>
+        </property>
+    </bean>
+    <bean id="secondRealm" class="com.javafan.shiro.realms.SecondRealm">
+        <property name="credentialsMatcher">
+            <bean class="org.apache.shiro.authc.credential.HashedCredentialsMatcher">
+                <property name="hashAlgorithmName" value="SHA1"/>
+                <property name="hashIterations" value="1024"/>
+            </bean>
+        </property>
+    </bean>
 
 
     <!--    Shiro和Spring相关的配

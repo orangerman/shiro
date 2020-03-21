@@ -3,18 +3,16 @@ package com.javafan.shiro.realms;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthenticatingRealm;
-import org.apache.shiro.realm.Realm;
 import org.apache.shiro.util.ByteSource;
-import org.springframework.jdbc.support.nativejdbc.JBossNativeJdbcExtractor;
 
 /**
  * @author fanfan
  */
-public class ShiroRealm extends AuthenticatingRealm {
+public class SecondRealm extends AuthenticatingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
-        System.out.println("First ShiroRealm doGetAuthenticationInfo");
+        System.out.println("SecondRealm + doGetAuthenticationInfo " );
 
         //1.把AuthenticationToken转化为UsernamepasswordToken
         UsernamePasswordToken upToken = (UsernamePasswordToken) token;
@@ -47,13 +45,14 @@ public class ShiroRealm extends AuthenticatingRealm {
         //替换realm的CredentialsMatcher =====>HashCredentialsMathcer
 
         //MD5加密后的密码
-        Object credentials = null;//"fc1709d0a95a6be30bc5926fdb7f22f4";
+        // "fc1709d0a95a6be30bc5926fdb7f22f4";
+        Object credentials = null;
         if ("admin".equals(username)) {
-            credentials = "038bdaf98f2037b31f1e75b5b4c9b26e";
+            credentials = "ce2f6417c7e1d32c1d81a797ee0b499f87c5de06";
         }
         if ("user".equals(username)) {
 
-            credentials = "098d2c478e9c11555ce2823231e02ec1";
+            credentials = "073d4c3ae812935f23cb3f2a71943f49e082a718";
         }
 
         String realmName = getName();
@@ -66,13 +65,13 @@ public class ShiroRealm extends AuthenticatingRealm {
         return info;
     }
 
-//    public static void main(String[] args) {
-//        String hashAlgorithmName = "MD5";
-//        Object credentials = "123456";
-//        Object salt = ByteSource.Util.bytes("user");
-//        int hashItertions = 1024;
-//        Object result = new SimpleHash(hashAlgorithmName, credentials, salt, hashItertions);
-//        System.out.println(result);
-//
-//    }
+    public static void main(String[] args) {
+        String hashAlgorithmName = "SHA1";
+        Object credentials = "123456";
+        Object salt = ByteSource.Util.bytes("admin");
+        int hashItertions = 1024;
+        Object result = new SimpleHash(hashAlgorithmName, credentials, salt, hashItertions);
+        System.out.println(result);
+
+    }
 }
