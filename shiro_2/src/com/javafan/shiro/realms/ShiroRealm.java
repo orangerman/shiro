@@ -1,16 +1,23 @@
 package com.javafan.shiro.realms;
 
 import org.apache.shiro.authc.*;
+import org.apache.shiro.authz.AuthorizationInfo;
+import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.crypto.hash.SimpleHash;
 import org.apache.shiro.realm.AuthenticatingRealm;
+import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.realm.Realm;
+import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.springframework.jdbc.support.nativejdbc.JBossNativeJdbcExtractor;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author fanfan
  */
-public class ShiroRealm extends AuthenticatingRealm {
+public class ShiroRealm extends AuthorizingRealm {
 
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
@@ -63,6 +70,31 @@ public class ShiroRealm extends AuthenticatingRealm {
         //new SimpleAuthenticationInfo(principal, credentials, realmName);
         SimpleAuthenticationInfo info = null;
         info = new SimpleAuthenticationInfo(principal, credentials, credentialSalt, realmName);
+        return info;
+    }
+
+    /**
+     * 授权方法
+     * @param principalCollection
+     * @return
+     */
+    @Override
+    protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principalCollection) {
+//        System.out.println("ShiroRealm doGetAuthorizationInfo......");
+        //1.从PrincipalCollection 获取登陆用户的信息
+        Object principals = principalCollection.getPrimaryPrincipal();
+        System.out.println(principals);
+
+        //2.利用登陆用户的信息来得到当前用户的角色或者权限信息（可能需要查询DB）
+        Set<String> roles = new HashSet<String>();
+        roles.add("user");
+        if ("admin".equals(principals)) {
+            roles.add("admin");
+        }
+
+        //3.创建SimpleAuthorizationInfo，来设置其roles属性
+        SimpleAuthorizationInfo info = new SimpleAuthorizationInfo(roles);
+        //4.返回创建SimpleAuthorizationInfo
         return info;
     }
 
